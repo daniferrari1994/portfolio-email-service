@@ -81,7 +81,22 @@ Envía un email de contacto.
 
 ## 🧪 Testing
 
-Visita `/test` para probar el endpoint localmente.
+Para probar el endpoint localmente, puedes usar:
+
+```bash
+curl -X POST https://portfolio-email-service-indol.vercel.app/api/send-email \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "Test",
+    "lastName": "User", 
+    "email": "test@example.com",
+    "phoneNumber": "+1234567890",
+    "message": "This is a test message from API",
+    "language": "en"
+  }'
+```
+
+O crear tu propia página de test si es necesario.
 
 ## 🔗 Uso desde el Portfolio
 
