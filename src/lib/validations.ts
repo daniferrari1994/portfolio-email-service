@@ -23,7 +23,7 @@ export const ContactFormSchema = z.object({
     .string()
     .min(8, 'El teléfono debe tener al menos 8 caracteres')
     .max(15, 'El teléfono no puede exceder 15 caracteres')
-    .regex(/^[+]?[0-9\s-()]+$/, 'El teléfono contiene caracteres inválidos'),
+    .regex(/^[+]?[0-9\s\-\(\)\.]+$/, 'El teléfono contiene caracteres inválidos'),
   
   message: z
     .string()
