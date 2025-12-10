@@ -4,6 +4,20 @@ import { sendContactEmail } from '@/lib/emailService';
 
 export async function POST(request: NextRequest) {
   try {
+    // Headers CORS
+    const origin = request.headers.get('origin');
+    const allowedOrigins = process.env.ALLOWED_ORIGIN?.split(',') || ['*'];
+    
+    const allowOrigin = allowedOrigins.includes('*') || allowedOrigins.includes(origin || '') 
+      ? (origin || '*') 
+      : allowedOrigins[0];
+
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': allowOrigin,
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+
     // Obtenemos los datos del cuerpo de la petición
     const body = await request.json();
     
@@ -17,7 +31,10 @@ export async function POST(request: NextRequest) {
           error: 'Datos inválidos',
           details: validationResult.error.errors 
         },
-        { status: 400 }
+        { 
+          status: 400,
+          headers: corsHeaders
+        }
       );
     }
     
@@ -32,7 +49,10 @@ export async function POST(request: NextRequest) {
           success: false, 
           error: 'Configuración del servidor incompleta' 
         },
-        { status: 500 }
+        { 
+          status: 500,
+          headers: corsHeaders
+        }
       );
     }
     
@@ -43,6 +63,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: 'Email enviado exitosamente'
+      }, {
+        headers: corsHeaders
       });
     } else {
       return NextResponse.json(
@@ -50,28 +72,52 @@ export async function POST(request: NextRequest) {
           success: false, 
           error: emailResult.error || 'Error al enviar email'
         },
-        { status: 500 }
+        { 
+          status: 500,
+          headers: corsHeaders
+        }
       );
     }
     
   } catch (error) {
     console.error('Error en el endpoint:', error);
+    
+    const origin = request.headers.get('origin');
+    const allowedOrigins = process.env.ALLOWED_ORIGIN?.split(',') || ['*'];
+    const allowOrigin = allowedOrigins.includes('*') || allowedOrigins.includes(origin || '') 
+      ? (origin || '*') 
+      : allowedOrigins[0];
+
     return NextResponse.json(
       { 
         success: false, 
         error: 'Error interno del servidor' 
       },
-      { status: 500 }
+      { 
+        status: 500,
+        headers: {
+          'Access-Control-Allow-Origin': allowOrigin,
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        }
+      }
     );
   }
 }
 
 // Manejamos las peticiones OPTIONS para CORS
-export async function OPTIONS() {
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin');
+  const allowedOrigins = process.env.ALLOWED_ORIGIN?.split(',') || ['*'];
+  
+  const allowOrigin = allowedOrigins.includes('*') || allowedOrigins.includes(origin || '') 
+    ? (origin || '*') 
+    : allowedOrigins[0];
+
   return new NextResponse(null, {
     status: 200,
     headers: {
-      'Access-Control-Allow-Origin': process.env.ALLOWED_ORIGIN || '*',
+      'Access-Control-Allow-Origin': allowOrigin,
       'Access-Control-Allow-Methods': 'POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     },
