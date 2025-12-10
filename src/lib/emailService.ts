@@ -12,6 +12,97 @@ export function createEmailTransporter() {
   });
 }
 
+// Función para crear el contenido HTML del email de confirmación
+export function createConfirmationEmailContent(data: ContactFormData): { subject: string; html: string; text: string } {
+  const subject = `✅ Confirmación: Tu mensaje ha sido recibido - Portfolio de Dan Ferrari`;
+  
+  const isSpanish = data.language === 'es';
+  
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <h2 style="color: #5ad3bd; border-bottom: 2px solid #5ad3bd; padding-bottom: 10px;">
+        ✅ ${isSpanish ? 'Mensaje recibido' : 'Message received'}
+      </h2>
+      
+      <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p style="color: #495057; font-size: 16px; margin-top: 0;">
+          ${isSpanish ? `Hola ${data.firstName},` : `Hi ${data.firstName},`}
+        </p>
+        <p style="color: #495057; line-height: 1.6;">
+          ${isSpanish 
+            ? 'Gracias por contactarte conmigo a través de mi portfolio. He recibido tu mensaje y me pondré en contacto contigo lo antes posible.'
+            : 'Thank you for contacting me through my portfolio. I have received your message and will get back to you as soon as possible.'
+          }
+        </p>
+      </div>
+      
+      <div style="background-color: #ffffff; border: 1px solid #dee2e6; padding: 20px; border-radius: 8px;">
+        <h3 style="color: #495057; margin-top: 0;">
+          ${isSpanish ? 'Resumen de tu mensaje:' : 'Summary of your message:'}
+        </h3>
+        <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #5ad3bd;">
+          <p style="color: #212529; line-height: 1.6; margin: 0; font-style: italic;">
+            "${data.message}"
+          </p>
+        </div>
+      </div>
+      
+      <div style="margin-top: 20px; padding: 20px; background-color: #e7f3ff; border-radius: 8px;">
+        <p style="color: #495057; margin: 0; text-align: center;">
+          ${isSpanish 
+            ? '💼 Mientras tanto, puedes seguir explorando mi portfolio en:'
+            : '💼 Meanwhile, you can continue exploring my portfolio at:'
+          }
+        </p>
+        <p style="text-align: center; margin: 10px 0;">
+          <a href="https://daniferrari1994.github.io/portfolio/" 
+             style="color: #5ad3bd; text-decoration: none; font-weight: bold;">
+            https://daniferrari1994.github.io/portfolio/
+          </a>
+        </p>
+      </div>
+      
+      <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 8px; font-size: 12px; color: #666; text-align: center;">
+        <p style="margin: 0;">
+          ${isSpanish 
+            ? 'Este es un email automático de confirmación. No responder a este mensaje.'
+            : 'This is an automated confirmation email. Please do not reply to this message.'
+          }
+        </p>
+        <p style="margin: 5px 0 0 0;">
+          <strong>Dan Ferrari</strong> - Frontend Developer
+        </p>
+      </div>
+    </div>
+  `;
+  
+  const text = `
+${isSpanish ? 'MENSAJE RECIBIDO' : 'MESSAGE RECEIVED'}
+
+${isSpanish ? `Hola ${data.firstName},` : `Hi ${data.firstName},`}
+
+${isSpanish 
+  ? 'Gracias por contactarte conmigo a través de mi portfolio. He recibido tu mensaje y me pondré en contacto contigo lo antes posible.'
+  : 'Thank you for contacting me through my portfolio. I have received your message and will get back to you as soon as possible.'
+}
+
+${isSpanish ? 'Resumen de tu mensaje:' : 'Summary of your message:'}
+"${data.message}"
+
+${isSpanish ? 'Portfolio:' : 'Portfolio:'} https://daniferrari1994.github.io/portfolio/
+
+---
+${isSpanish 
+  ? 'Este es un email automático de confirmación. No responder a este mensaje.'
+  : 'This is an automated confirmation email. Please do not reply to this message.'
+}
+
+Dan Ferrari - Frontend Developer
+  `;
+  
+  return { subject, html, text };
+}
+
 // Función para crear el contenido HTML del email
 export function createEmailContent(data: ContactFormData): { subject: string; html: string; text: string } {
   const subject = `[Portfolio] Mensaje de ${data.firstName} ${data.lastName} - ${data.email}`;
@@ -98,20 +189,16 @@ Origen: Portfolio - Formulario de contacto
   return { subject, html, text };
 }
 
-// Función principal para enviar email
-export async function sendContactEmail(data: ContactFormData): Promise<{ success: boolean; error?: string }> {
+// Función para enviar email de confirmación al usuario
+export async function sendConfirmationEmail(data: ContactFormData): Promise<{ success: boolean; error?: string }> {
   try {
     const transporter = createEmailTransporter();
-    const emailContent = createEmailContent(data);
+    const emailContent = createConfirmationEmailContent(data);
     
-    // Verificar conexión con Gmail
-    await transporter.verify();
-    
-    // Configurar el email
+    // Configurar el email de confirmación
     const mailOptions = {
-      from: `"Portfolio - ${data.firstName} ${data.lastName}" <${process.env.GMAIL_USER}>`,
-      to: process.env.DESTINATION_EMAIL,
-      replyTo: data.email,
+      from: `"Dan Ferrari - Portfolio" <${process.env.GMAIL_USER}>`,
+      to: data.email, // Email del usuario que envió el mensaje
       subject: emailContent.subject,
       text: emailContent.text,
       html: emailContent.html,
@@ -120,7 +207,56 @@ export async function sendContactEmail(data: ContactFormData): Promise<{ success
     // Enviar el email
     const result = await transporter.sendMail(mailOptions);
     
-    console.log('Email enviado exitosamente:', result.messageId);
+    console.log('Email de confirmación enviado exitosamente:', result.messageId);
+    
+    return { success: true };
+    
+  } catch (error) {
+    console.error('Error enviando email de confirmación:', error);
+    
+    if (error instanceof Error) {
+      return { 
+        success: false, 
+        error: error.message 
+      };
+    }
+    
+    return { 
+      success: false, 
+      error: 'Error desconocido al enviar email de confirmación' 
+    };
+  }
+}
+
+// Función principal para enviar emails (contacto + confirmación)
+export async function sendContactEmail(data: ContactFormData): Promise<{ success: boolean; error?: string }> {
+  try {
+    const transporter = createEmailTransporter();
+    
+    // Verificar conexión con Gmail
+    await transporter.verify();
+    
+    // 1. Enviar email de contacto a ti
+    const contactEmailContent = createEmailContent(data);
+    const contactMailOptions = {
+      from: `"Portfolio - ${data.firstName} ${data.lastName}" <${process.env.GMAIL_USER}>`,
+      to: process.env.DESTINATION_EMAIL,
+      replyTo: data.email,
+      subject: contactEmailContent.subject,
+      text: contactEmailContent.text,
+      html: contactEmailContent.html,
+    };
+    
+    const contactResult = await transporter.sendMail(contactMailOptions);
+    console.log('Email de contacto enviado exitosamente:', contactResult.messageId);
+    
+    // 2. Enviar email de confirmación al usuario
+    const confirmationResult = await sendConfirmationEmail(data);
+    
+    if (!confirmationResult.success) {
+      console.warn('Error enviando email de confirmación:', confirmationResult.error);
+      // No fallar todo el proceso si solo falla la confirmación
+    }
     
     return { success: true };
     
