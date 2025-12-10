@@ -14,7 +14,7 @@ export function createEmailTransporter() {
 
 // Función para crear el contenido HTML del email
 export function createEmailContent(data: ContactFormData): { subject: string; html: string; text: string } {
-  const subject = `📧 Nuevo mensaje de contacto de ${data.firstName} ${data.lastName}`;
+  const subject = `[Portfolio] Mensaje de ${data.firstName} ${data.lastName} - ${data.email}`;
   
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -109,7 +109,7 @@ export async function sendContactEmail(data: ContactFormData): Promise<{ success
     
     // Configurar el email
     const mailOptions = {
-      from: `"${data.firstName} ${data.lastName}" <${process.env.GMAIL_USER}>`,
+      from: `"Portfolio - ${data.firstName} ${data.lastName}" <${process.env.GMAIL_USER}>`,
       to: process.env.DESTINATION_EMAIL,
       replyTo: data.email,
       subject: emailContent.subject,
