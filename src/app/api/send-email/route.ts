@@ -39,7 +39,6 @@ export async function POST(request: NextRequest) {
     }
     
     const validatedData = validationResult.data;
-    console.log('Datos validados:', validatedData);
     
     // Verificar que las variables de entorno estén configuradas
     if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD || !process.env.DESTINATION_EMAIL) {
