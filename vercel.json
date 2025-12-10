@@ -6,12 +6,5 @@
       "src": "package.json",
       "use": "@vercel/next"
     }
-  ],
-  "env": {
-    "GMAIL_USER": "@gmail_user",
-    "GMAIL_APP_PASSWORD": "@gmail_app_password", 
-    "DESTINATION_EMAIL": "@destination_email",
-    "ALLOWED_ORIGIN": "@allowed_origin",
-    "NODE_ENV": "production"
-  }
+  ]
 }
