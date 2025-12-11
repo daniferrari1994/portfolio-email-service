@@ -77,27 +77,27 @@ export function createConfirmationEmailContent(data: ContactFormData): { subject
   `;
   
   const text = `
-${isSpanish ? 'MENSAJE RECIBIDO' : 'MESSAGE RECEIVED'}
+    ${isSpanish ? 'MENSAJE RECIBIDO' : 'MESSAGE RECEIVED'}
 
-${isSpanish ? `Hola ${data.firstName},` : `Hi ${data.firstName},`}
+    ${isSpanish ? `Hola ${data.firstName},` : `Hi ${data.firstName},`}
 
-${isSpanish 
-  ? 'Gracias por contactarte conmigo a través de mi portfolio. He recibido tu mensaje y me pondré en contacto contigo lo antes posible.'
-  : 'Thank you for contacting me through my portfolio. I have received your message and will get back to you as soon as possible.'
-}
+    ${isSpanish 
+      ? 'Gracias por contactarte conmigo a través de mi portfolio. He recibido tu mensaje y me pondré en contacto contigo lo antes posible.'
+      : 'Thank you for contacting me through my portfolio. I have received your message and will get back to you as soon as possible.'
+    }
 
-${isSpanish ? 'Resumen de tu mensaje:' : 'Summary of your message:'}
-"${data.message}"
+    ${isSpanish ? 'Resumen de tu mensaje:' : 'Summary of your message:'}
+    "${data.message}"
 
-${isSpanish ? 'Portfolio:' : 'Portfolio:'} https://daniferrari1994.github.io/portfolio/
+    ${isSpanish ? 'Portfolio:' : 'Portfolio:'} https://daniferrari1994.github.io/portfolio/
 
----
-${isSpanish 
-  ? 'Este es un email automático de confirmación. No responder a este mensaje.'
-  : 'This is an automated confirmation email. Please do not reply to this message.'
-}
+    ---
+    ${isSpanish 
+      ? 'Este es un email automático de confirmación. No responder a este mensaje.'
+      : 'This is an automated confirmation email. Please do not reply to this message.'
+    }
 
-Dan Ferrari - Frontend Developer
+    Dan Ferrari - Frontend Developer
   `;
   
   return { subject, html, text };
@@ -168,22 +168,22 @@ export function createEmailContent(data: ContactFormData): { subject: string; ht
   `;
   
   const text = `
-NUEVO MENSAJE DE CONTACTO
+    NUEVO MENSAJE DE CONTACTO
 
-Información del contacto:
-- Nombre: ${data.firstName} ${data.lastName}
-- Email: ${data.email}
-- Teléfono: ${data.phoneNumber}
-- Idioma: ${data.language === 'es' ? 'Español' : 'English'}
+    Información del contacto:
+    - Nombre: ${data.firstName} ${data.lastName}
+    - Email: ${data.email}
+    - Teléfono: ${data.phoneNumber}
+    - Idioma: ${data.language === 'es' ? 'Español' : 'English'}
 
-Mensaje:
-${data.message}
+    Mensaje:
+    ${data.message}
 
----
-Fecha: ${new Date().toLocaleString('es-ES', { 
-  timeZone: 'America/Argentina/Buenos_Aires' 
-})}
-Origen: Portfolio - Formulario de contacto
+    ---
+    Fecha: ${new Date().toLocaleString('es-ES', { 
+      timeZone: 'America/Argentina/Buenos_Aires' 
+    })}
+    Origen: Portfolio - Formulario de contacto
   `;
   
   return { subject, html, text };
